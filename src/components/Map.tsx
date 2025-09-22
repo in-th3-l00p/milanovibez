@@ -22,11 +22,12 @@ function loadGoogleMaps(apiKey: string): Promise<typeof google> {
 export type MapProps = {
   places: Place[];
   center?: { lat: number; lng: number };
+  origin?: { lat: number; lng: number } | null;
   zoom?: number;
   className?: string;
 };
 
-export default function Map({ places, center, zoom = 13, className }: MapProps) {
+export default function Map({ places, center, origin, zoom = 13, className }: MapProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const ref = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +45,7 @@ export default function Map({ places, center, zoom = 13, className }: MapProps) 
     }
     let map: google.maps.Map | null = null;
     let markers: google.maps.Marker[] = [];
+    let originMarker: google.maps.Marker | null = null;
     let cancelled = false;
     loadGoogleMaps(apiKey)
       .then((g) => {
@@ -58,9 +60,18 @@ export default function Map({ places, center, zoom = 13, className }: MapProps) 
         markers = coords.map((p) =>
           new g.maps.Marker({ position: { lat: p.lat, lng: p.lng }, map, title: p.name }),
         );
-        if (markers.length > 0) {
+        if (markers.length > 0 || origin) {
           const bounds = new g.maps.LatLngBounds();
           for (const m of markers) bounds.extend(m.getPosition()!);
+          if (origin && Number.isFinite(origin.lat) && Number.isFinite(origin.lng)) {
+            originMarker = new g.maps.Marker({
+              position: origin,
+              map,
+              title: "you are here",
+              zIndex: 9999,
+            });
+            bounds.extend(originMarker.getPosition()!);
+          }
           map.fitBounds(bounds, 32);
         }
       })
@@ -71,9 +82,10 @@ export default function Map({ places, center, zoom = 13, className }: MapProps) 
     return () => {
       cancelled = true;
       markers.forEach((m) => m.setMap(null));
+      originMarker?.setMap(null);
       map = null;
     };
-  }, [apiKey, center, zoom, coords]);
+  }, [apiKey, center, origin, zoom, coords]);
 
   if (!apiKey) {
     return (

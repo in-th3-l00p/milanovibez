@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Place } from "@/types/place";
 import { hydratePlaces } from "@/lib/importPlaces";
 import Map from "@/components/Map";
+import { distanceKm, walkingMinutes } from "@/lib/distance";
 
 const ALL_CATEGORIES = ["sights", "restaurants", "drinks", "street"] as const;
 type UiCategory = (typeof ALL_CATEGORIES)[number];
@@ -22,6 +23,8 @@ export default function Home() {
   );
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [places, setPlaces] = useState<Place[]>([]);
+  const [origin, setOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [useNearest, setUseNearest] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,7 +52,7 @@ export default function Home() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return places.filter((p) => {
+    const base = places.filter((p) => {
       const cat = deriveCategoryFromTags(p.tags);
       if (!selectedCategories.has(cat)) return false;
       const matchesQuery = q
@@ -60,7 +63,19 @@ export default function Home() {
         : true;
       return matchesQuery && matchesTags;
     });
-  }, [places, query, selectedCategories, selectedTags]);
+    if (useNearest && origin) {
+      return base
+        .map((p) => ({
+          p,
+          d: Number.isFinite(p.lat) && Number.isFinite(p.lng)
+            ? distanceKm(origin, { lat: p.lat, lng: p.lng })
+            : Number.POSITIVE_INFINITY,
+        }))
+        .sort((a, b) => a.d - b.d)
+        .map((x) => x.p);
+    }
+    return base;
+  }, [places, query, selectedCategories, selectedTags, useNearest, origin]);
 
   function toggleCategory(cat: UiCategory): void {
     const next = new Set(selectedCategories);
@@ -74,6 +89,29 @@ export default function Home() {
     if (next.has(tag)) next.delete(tag);
     else next.add(tag);
     setSelectedTags(next);
+  }
+
+  function findNearest(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setOrigin({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setUseNearest(true);
+        },
+        () => {
+          const lat = Number(process.env.NEXT_PUBLIC_DEFAULT_CENTER_LAT ?? 45.4642);
+          const lng = Number(process.env.NEXT_PUBLIC_DEFAULT_CENTER_LNG ?? 9.19);
+          setOrigin({ lat, lng });
+          setUseNearest(true);
+        },
+        { enableHighAccuracy: true, timeout: 5000 },
+      );
+    } else {
+      const lat = Number(process.env.NEXT_PUBLIC_DEFAULT_CENTER_LAT ?? 45.4642);
+      const lng = Number(process.env.NEXT_PUBLIC_DEFAULT_CENTER_LNG ?? 9.19);
+      setOrigin({ lat, lng });
+      setUseNearest(true);
+    }
   }
 
   return (
@@ -90,7 +128,7 @@ export default function Home() {
         </header>
 
         <section aria-label="map" className="w-full">
-          <Map places={places} className="w-full aspect-[16/9] border border-black" />
+          <Map places={places} origin={origin} className="w-full aspect-[16/9] border border-black" />
         </section>
 
         <section className="flex flex-col gap-4">
@@ -117,6 +155,12 @@ export default function Home() {
               placeholder="search locations..."
               className="w-full md:w-64 border border-black px-3 py-1 text-sm lowercase bg-white text-black"
             />
+            <button
+              onClick={findNearest}
+              className="px-3 py-1 border border-black text-sm lowercase bg-white text-black"
+            >
+              find nearest
+            </button>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -140,10 +184,18 @@ export default function Home() {
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((p) => {
             const cat = deriveCategoryFromTags(p.tags);
+            const hasCoords = Number.isFinite(p.lat) && Number.isFinite(p.lng);
+            const distance = origin && hasCoords ? distanceKm(origin, { lat: p.lat, lng: p.lng }) : null;
+            const walk = distance != null && Number.isFinite(distance) ? walkingMinutes(distance) : null;
             return (
             <article key={p.id} className="border border-black p-4 flex flex-col gap-2">
               <h2 className="text-lg font-semibold lowercase">{p.name}</h2>
               <div className="text-xs text-black/70 lowercase">{cat}</div>
+              {distance != null && Number.isFinite(distance) ? (
+                <div className="text-xs text-black/80 lowercase">~{distance.toFixed(2)} km • {walk} min walk</div>
+              ) : (
+                <div className="text-xs text-black/50 lowercase">distance unknown</div>
+              )}
               {p.notes ? (
                 <p className="text-sm text-black/80 lowercase">{p.notes}</p>
               ) : null}
