@@ -71,7 +71,33 @@ export async function POST(req: Request) {
       ],
       response_format: {
         type: "json_schema",
-        json_schema: { name: "PlanResponse", schema: PlanRespZ.toJSON(), strict: true },
+        json_schema: {
+          name: "PlanResponse",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            required: ["summary", "items"],
+            properties: {
+              summary: { type: "string" },
+              items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["start", "end", "title"],
+                  properties: {
+                    start: { type: "string", format: "date-time" },
+                    end: { type: "string", format: "date-time" },
+                    placeId: { type: "string" },
+                    title: { type: "string" },
+                    details: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       temperature: 0.2,
     }),

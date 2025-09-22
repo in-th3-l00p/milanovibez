@@ -3,15 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Place } from "@/types/place";
 
-function loadGoogleMaps(apiKey: string): Promise<typeof google> {
-  const existing = (window as any)._gmapsPromise as Promise<typeof google> | undefined;
+function loadGoogleMaps(apiKey: string): Promise<any> {
+  const existing = (window as any)._gmapsPromise as Promise<any> | undefined;
   if (existing) return existing;
-  const p = new Promise<typeof google>((resolve, reject) => {
+  const p = new Promise<any>((resolve, reject) => {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
     script.async = true;
     script.defer = true;
-    script.onload = () => resolve((window as any).google as typeof google);
+    script.onload = () => resolve((window as any).google as any);
     script.onerror = () => reject(new Error("google maps failed to load"));
     document.head.appendChild(script);
   });
@@ -43,9 +43,9 @@ export default function Map({ places, center, origin, zoom = 13, className }: Ma
       setError("missing NEXT_PUBLIC_GOOGLE_MAPS_API_KEY");
       return;
     }
-    let map: google.maps.Map | null = null;
-    let markers: google.maps.Marker[] = [];
-    let originMarker: google.maps.Marker | null = null;
+    let map: any | null = null;
+    let markers: any[] = [];
+    let originMarker: any | null = null;
     let cancelled = false;
     loadGoogleMaps(apiKey)
       .then((g) => {
