@@ -1,0 +1,183 @@
+# Milan Trip Planner — Cursor Rules
+
+## Context
+A personal web app to plan a Milan trip. User inputs a list of places and sees rich info for each: description, distance, Google Maps and website links. Provide a button to find the nearest places from the user’s current location or a configured home base. Include an OpenAI-powered chat/plan composer that generates a trip plan for a desired time window.
+
+## Primary Goals
+- Input and manage a list of places (name, address, coordinates, links, notes, tags).
+- Show each place’s details with computed distance and quick links (Maps, website).
+- "Find nearest" feature using geolocation with graceful fallback.
+- OpenAI integration to generate trip plans from selected places and time constraints.
+- Aesthetic: white, centered, sharp/edgy, minimal, responsive.
+
+## Non-Goals
+- Building a social/multi-user platform.
+- Full-blown booking or payments.
+- Heavy map rendering; rely on links/embeds instead of complex map SDKs unless needed.
+
+## Tech Stack
+- Framework: Next.js (App Router) + TypeScript.
+- Styling: Tailwind CSS (preferred) via PostCSS; minimal custom CSS in `src/app/globals.css`.
+- Data: Client-side state + localStorage for draft/ephemeral data; simple JSON on disk for seeds.
+- APIs: Next.js Route Handlers under `src/app/api/*` for server-only logic (OpenAI calls, geocoding if any).
+- Lint/Format: Biome (respect existing `biome.json`).
+
+## Directory Conventions
+- `src/app/page.tsx`: Home experience and primary UI.
+- `src/components/`: Reusable UI (cards, lists, inputs, buttons, empty states, layout wrappers).
+- `src/lib/`: Utilities (distance calc, formatting, persistence, OpenAI client, schemas).
+- `src/types/`: Type definitions (Place, PlanRequest, Itinerary).
+- `src/app/api/plan/route.ts`: OpenAI-backed planning endpoint.
+
+## Environment Variables
+- Server-only:
+  - `OPENAI_API_KEY`: for plan generation.
+  - `HOME_BASE_LAT`, `HOME_BASE_LNG`: default origin if geolocation unavailable.
+- Client-safe (NEXT_PUBLIC_*):
+  - `NEXT_PUBLIC_DEFAULT_CENTER_LAT`, `NEXT_PUBLIC_DEFAULT_CENTER_LNG`
+  - `NEXT_PUBLIC_DEFAULT_ZOOM` (string number)
+- Optional:
+  - `GOOGLE_MAPS_API_KEY` if moving to Maps SDK; otherwise link-only is fine.
+
+Keep secrets out of the client. All OpenAI calls occur server-side.
+
+## Data Models (TypeScript)
+- Place
+  - `id: string`
+  - `name: string`
+  - `address?: string`
+  - `lat: number`
+  - `lng: number`
+  - `websiteUrl?: string`
+  - `googleMapsUrl?: string` (prefer `https://www.google.com/maps/search/?api=1&query=<lat>,<lng>` or Place ID links)
+  - `tags?: string[]`
+  - `notes?: string`
+
+- PlanRequest
+  - `places: Place[]`
+  - `timeBudget: { unit: 'hours' | 'days'; value: number }`
+  - `start?: string` (ISO date/time)
+  - `preferences?: string[]` (e.g., art, food, coffee, walking, budget)
+
+- ItineraryItem
+  - `start: string` (ISO)
+  - `end: string` (ISO)
+  - `placeId?: string`
+  - `title: string`
+  - `details?: string`
+
+- PlanResponse
+  - `summary: string`
+  - `items: ItineraryItem[]`
+
+## Distance Calculation
+- Use haversine formula in `src/lib/distance.ts`.
+- Provide helpers:
+  - `distanceKm(from: { lat, lng }, to: { lat, lng }): number`
+  - `walkingMinutes(distanceKm: number, kmPerHour = 5): number`
+- Compute from geolocation if available; else from `HOME_BASE_LAT/LNG`.
+
+## UX & Visual Language
+- Layout: centered column, `max-width` ≈ 800–960px, generous whitespace.
+- Palette: white background, dark gray text, subtle neutral borders (`#E5E7EB`).
+- Shape: sharp/edgy (0–2px radius), thin borders, subtle elevation.
+- Typography: system UI or Inter; bold section headers; compact captions.
+- Components: Card (place), Toolbar (actions), List (sortable/filterable), Dialog (import/export).
+- Interactions: snappy, keyboard-friendly, no intrusive animations.
+
+## Accessibility
+- Respect `prefers-reduced-motion`.
+- Sufficient color contrast; focus styles visible.
+- Buttons are real `<button>`; links are `<a>` with `rel="noopener"` where needed.
+
+## API Design
+- `POST /api/plan`
+  - Body: `PlanRequest`
+  - Returns: `PlanResponse`
+  - Validates with Zod; sanitize/trim inputs.
+  - Streams text optional; start simple with JSON.
+
+## OpenAI Prompting
+- System prompt: "You are a meticulous Milan trip planner. Propose efficient, walkable itineraries prioritizing geography and user preferences. Always consider opening hours and travel time."
+- Provide the selected places with coordinates and tags.
+- Ask for a coherent plan that fits `timeBudget` and returns structured JSON per `PlanResponse`.
+- Post-process to ensure valid ISO timestamps and item ordering.
+
+## Maps & Links
+- Google Maps link template (no API key required):
+  - `https://www.google.com/maps/search/?api=1&query=<lat>,<lng>`
+- Website: render as-is if provided; validate protocol and host.
+
+## State & Persistence
+- In-memory React state for the session.
+- Mirror to `localStorage` so the list of places persists across refreshes.
+- Provide import/export JSON for the places list.
+
+## Tasks for the Assistant (do in this order when asked to implement)
+1) Add Tailwind CSS
+- Install and set up Tailwind with PostCSS.
+- Configure `content` to scan `src/**/*.{ts,tsx}`.
+- Define a minimal theme (radius 0–2, neutral palette).
+
+2) Types and Utils
+- Create `src/types/place.ts`, `src/types/plan.ts`.
+- Create `src/lib/distance.ts` with haversine + walking time.
+- Create `src/lib/links.ts` for Google Maps URL helpers.
+
+3) Core UI
+- Build `PlaceCard`, `PlaceList`, `PlaceEditor` components.
+- Add toolbar with: Add Place, Import JSON, Export JSON, Find Nearest.
+- Centered layout in `src/app/page.tsx` matching the aesthetic.
+
+4) Geolocation + Nearest
+- Ask for permission; fallback to home base.
+- Sort places by distance and highlight nearest N.
+
+5) Planning API
+- Add `src/app/api/plan/route.ts` using OpenAI with Zod validation.
+- Create a small client in `src/lib/planClient.ts`.
+
+6) Chat/Planner UI
+- Minimal chat/controls to request a plan for `timeBudget`.
+- Render `PlanResponse` as a clean list with times and links.
+
+7) Polish
+- Empty states, error toasts, loading states.
+- Keyboard shortcuts: `a` to add place, `/` to focus search.
+
+## Coding Conventions
+- TypeScript strict; explicit function signatures for exported functions.
+- Early returns; guard against undefined/NaN coordinates.
+- No unused exports; keep modules focused.
+- Use Zod for request validation and parsing.
+- Keep components small and cohesive; lift state only when needed.
+
+## Performance Budgets
+- Initial bundle < 200KB gzip.
+- Avoid heavy map SDK unless necessary.
+- Prefer simple links/embeds.
+
+## Linting & Formatting
+- Use Biome; fix or justify warnings before commit.
+- Keep imports ordered and deterministic.
+
+## Commit Style
+- Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`...).
+
+## Local Development Commands (suggested)
+- `npm run dev` — start Next.js dev server.
+- `npm run build` — build for production.
+- `npm run start` — start production server.
+- `npm run lint` — run Biome.
+
+## Guardrails
+- Never expose `OPENAI_API_KEY` to the client. All AI calls go through server routes.
+- Validate and sanitize user input; escape/encode when rendering URLs.
+- Ask for user confirmation before destructive actions (clear list).
+
+## Acceptance Criteria (MVP)
+- Can add/import a list of places and see them as cards.
+- Each card shows name, address (if any), distance from origin, Maps and website links.
+- "Find nearest" sorts and highlights nearest places from current or home base.
+- Can request a plan for a given time budget and receive a structured, readable itinerary.
+- UI matches the white, centered, edgy aesthetic on mobile and desktop.
