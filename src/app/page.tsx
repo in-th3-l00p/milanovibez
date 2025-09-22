@@ -1,103 +1,177 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { Place } from "@/types/place";
+import { hydratePlaces } from "@/lib/importPlaces";
+import Map from "@/components/Map";
+
+const ALL_CATEGORIES = ["sights", "restaurants", "drinks", "street"] as const;
+type UiCategory = (typeof ALL_CATEGORIES)[number];
+
+function deriveCategoryFromTags(tags?: string[]): UiCategory {
+  if (tags?.includes("restaurant")) return "restaurants";
+  if (tags?.includes("cocktails")) return "drinks";
+  if (tags?.includes("street")) return "street";
+  return "sights";
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [query, setQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<Set<UiCategory>>(
+    new Set(ALL_CATEGORIES),
+  );
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+  const [places, setPlaces] = useState<Place[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const raw = await fetch("/places.seed.json").then((r) => r.json());
+        const hydrated = await hydratePlaces(raw as any[]);
+        if (!cancelled) setPlaces(hydrated);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const allTags = useMemo(() => {
+    const s = new Set<string>();
+    for (const p of places) {
+      for (const t of p.tags ?? []) s.add(t);
+    }
+    return Array.from(s).sort();
+  }, [places]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return places.filter((p) => {
+      const cat = deriveCategoryFromTags(p.tags);
+      if (!selectedCategories.has(cat)) return false;
+      const matchesQuery = q
+        ? p.name.toLowerCase().includes(q) || (p.notes ?? "").toLowerCase().includes(q)
+        : true;
+      const matchesTags = selectedTags.size
+        ? (p.tags ?? []).some((t) => selectedTags.has(t))
+        : true;
+      return matchesQuery && matchesTags;
+    });
+  }, [places, query, selectedCategories, selectedTags]);
+
+  function toggleCategory(cat: UiCategory): void {
+    const next = new Set(selectedCategories);
+    if (next.has(cat)) next.delete(cat);
+    else next.add(cat);
+    setSelectedCategories(next);
+  }
+
+  function toggleTag(tag: string): void {
+    const next = new Set(selectedTags);
+    if (next.has(tag)) next.delete(tag);
+    else next.add(tag);
+    setSelectedTags(next);
+  }
+
+  return (
+    <div className="min-h-screen w-full flex justify-center p-8">
+      <main className="w-full max-w-4xl flex flex-col gap-8">
+        <header className="flex flex-col items-center text-center gap-3 lowercase">
+          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">
+            🇮🇹 cata's milan trip research lol
+          </h1>
+          <p className="text-base md:text-lg text-black/80 max-w-2xl">
+            after a morning of scrolling and saving, why not turn it into
+            structured data and a tiny app to actually use in milan
+          </p>
+        </header>
+
+        <section aria-label="map" className="w-full">
+          <Map places={places} className="w-full aspect-[16/9] border border-black" />
+        </section>
+
+        <section className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {ALL_CATEGORIES.map((cat) => {
+                const active = selectedCategories.has(cat);
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => toggleCategory(cat)}
+                    className={`px-3 py-1 border border-black text-sm lowercase ${
+                      active ? "bg-black text-white" : "bg-white text-black"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="search locations..."
+              className="w-full md:w-64 border border-black px-3 py-1 text-sm lowercase bg-white text-black"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {allTags.map((tag) => {
+              const active = selectedTags.has(tag);
+              return (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-2 py-1 border border-black text-xs lowercase ${
+                    active ? "bg-black text-white" : "bg-white text-black"
+                  }`}
+                >
+                  #{tag}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((p) => {
+            const cat = deriveCategoryFromTags(p.tags);
+            return (
+            <article key={p.id} className="border border-black p-4 flex flex-col gap-2">
+              <h2 className="text-lg font-semibold lowercase">{p.name}</h2>
+              <div className="text-xs text-black/70 lowercase">{cat}</div>
+              {p.notes ? (
+                <p className="text-sm text-black/80 lowercase">{p.notes}</p>
+              ) : null}
+              <div className="flex flex-wrap gap-1">
+                {(p.tags ?? []).map((t) => (
+                  <span key={t} className="text-[11px] px-2 py-0.5 border border-black lowercase">
+                    #{t}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-2">
+                <a
+                  href={p.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm underline underline-offset-2"
+                >
+                  open in maps ↗
+                </a>
+              </div>
+            </article>
+          );})}
+        </section>
+
+        <footer className="text-center text-xs text-black/60 lowercase py-8">
+          built for fun — will add ai plan + nearest button next
+        </footer>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

@@ -1,0 +1,245 @@
+[
+    {
+      "id": "villa-invernizzi",
+      "name": "Villa Invernizzi",
+      "address": "Via Cappuccini 7, 20122 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": null,
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Via%20Cappuccini%207%2C%2020122%20Milano",
+      "tags": ["center", "hidden-gem", "flamingos"],
+      "notes": "View flamingos from the street gate; Quadrilatero del Silenzio."
+    },
+    {
+      "id": "navigli-district",
+      "name": "Navigli District (Darsena)",
+      "address": "Darsena, 20143 Milano MI, Italy",
+      "lat": 45.453961, 
+      "lng": 9.175356,
+      "websiteUrl": "https://www.yesmilano.it/en/see-and-do/venues/navigli-district",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.453961,9.175356",
+      "tags": ["center", "nightlife", "canals", "aperitivo"],
+      "notes": "Go at sunset; aperitivo crawl."
+    },
+    {
+      "id": "pinacoteca-di-brera",
+      "name": "Pinacoteca di Brera",
+      "address": "Via Brera 28, 20121 Milano MI, Italy",
+      "lat": 45.4698,
+      "lng": 9.1862,
+      "websiteUrl": "https://pinacotecabrera.org/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.4698,9.1862",
+      "tags": ["center", "art", "museum"],
+      "notes": "Caravaggio, Raphael; compact but dense."
+    },
+    {
+      "id": "castello-sforzesco",
+      "name": "Castello Sforzesco",
+      "address": "Piazza Castello, 20121 Milano MI, Italy",
+      "lat": 45.47,
+      "lng": 9.17861,
+      "websiteUrl": "https://www.milanocastello.it/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.47,9.17861",
+      "tags": ["center", "castle", "museum"],
+      "notes": "Cut through to Parco Sempione."
+    },
+    {
+      "id": "parco-sempione",
+      "name": "Parco Sempione",
+      "address": "Piazza Sempione, 20154 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://www.italia.it/en/lombardy/milan/parco-sempione",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Parco%20Sempione%20Milano",
+      "tags": ["center", "park", "chill"],
+      "notes": "Green break after the castle."
+    },
+    {
+      "id": "cenacolo",
+      "name": "Museo del Cenacolo Vinciano (The Last Supper)",
+      "address": "Piazza di Santa Maria delle Grazie 2, 20123 Milano MI, Italy",
+      "lat": 45.465957,
+      "lng": 9.171432,
+      "websiteUrl": "https://cenacolovinciano.org/en/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.465957,9.171432",
+      "tags": ["center", "art", "tickets-required"],
+      "notes": "Book weeks in advance; timed entry."
+    },
+    {
+      "id": "fondazione-prada",
+      "name": "Fondazione Prada",
+      "address": "Largo Isarco 2, 20139 Milano MI, Italy",
+      "lat": 45.4443592,
+      "lng": 9.2051589,
+      "websiteUrl": "https://www.fondazioneprada.org/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.4443592,9.2051589",
+      "tags": ["center", "contemporary-art", "architecture"],
+      "notes": "OMA compound; Bar Luce by Wes Anderson."
+    },
+    {
+      "id": "hamleys",
+      "name": "Hamleys Milano",
+      "address": "Corso Vittorio Emanuele II 24/28, 20122 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://www.hamleys.com/stores/europe/italy-milan",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Hamleys%20Milano",
+      "tags": ["center", "toys", "shopping"],
+      "notes": "Big flagship on the Duomo–San Babila strip."
+    },
+  
+    {
+      "id": "maria-secret-pizza",
+      "name": "Maria’s Secret Pizza (placeholder)",
+      "address": null,
+      "lat": null,
+      "lng": null,
+      "websiteUrl": null,
+      "googleMapsUrl": null,
+      "tags": ["restaurant", "pizza", "tbd"],
+      "notes": "Add exact pin when Maria shares it."
+    },
+    {
+      "id": "osteria-da-fortunata",
+      "name": "Osteria da Fortunata (Brera)",
+      "address": "Via dei Fiori Chiari 13, 20121 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://osteriadafortunata.it/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Osteria%20da%20Fortunata%20Milano",
+      "tags": ["restaurant", "pasta", "popular"],
+      "notes": "Touristy but solid; multiple Milan locations."
+    },
+    {
+      "id": "trattoria-milanese",
+      "name": "Trattoria Milanese",
+      "address": "Via Santa Marta 11, 20123 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://trattoria-milanese.res-menu.com/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Trattoria%20Milanese%20Via%20Santa%20Marta%2011%20Milano",
+      "tags": ["restaurant", "classic", "ossobuco", "risotto"],
+      "notes": "Old-school Milanese dishes; book ahead."
+    },
+    {
+      "id": "savini",
+      "name": "Savini Milano 1867 (in Galleria)",
+      "address": "Galleria Vittorio Emanuele II / Via Ugo Foscolo 5, 20121 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://savinimilano.it/en/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Savini%20Milano%201867",
+      "tags": ["restaurant", "iconic", "fine-dining"],
+      "notes": "Historic Belle Époque institution."
+    },
+    {
+      "id": "giacomo-bistrot",
+      "name": "Giacomo Bistrot",
+      "address": "Via Pasquale Sottocorno 6, 20129 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://giacomomilano.com/en/i-luoghi/bistrot/giacomo-bistrot-milano",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Giacomo%20Bistrot%20Milano",
+      "tags": ["restaurant", "stylish", "bistrot"],
+      "notes": "Fashion crowd; seasonal Italian."
+    },
+    {
+      "id": "paper-moon-giardino",
+      "name": "Paper Moon Giardino",
+      "address": "Via Bagutta 12, 20121 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://www.papermoonrestaurants.com/paper-moon-giardino.html",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Paper%20Moon%20Giardino%20Via%20Bagutta%2012%20Milano",
+      "tags": ["restaurant", "refined", "fashion-district"],
+      "notes": "Elegant garden setting near Montenapoleone."
+    },
+    {
+      "id": "nottingham-forest",
+      "name": "Nottingham Forest",
+      "address": "Viale Piave 1, 20129 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://www.nottingham-forest.com/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Nottingham%20Forest%20Milano",
+      "tags": ["cocktails", "worlds50best"],
+      "notes": "Experimental/molecular; lines are normal."
+    },
+    {
+      "id": "giacomo-arengario",
+      "name": "Giacomo Arengario",
+      "address": "Museo del Novecento, Via Guglielmo Marconi 1, 20123 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://giacomomilano.com/en/i-luoghi/ristoranti/da-giacomo-arengario",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Giacomo%20Arengario%20Milano",
+      "tags": ["cocktails", "duomo-view", "restaurant-bar"],
+      "notes": "Come for the view; reserve terrace."
+    },
+    {
+      "id": "drinc-different",
+      "name": "DRINC. Different",
+      "address": "Via Francesco Hayez 13, 20129 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://bydrinc.com/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Via%20Francesco%20Hayez%2013%20Milano",
+      "tags": ["cocktails", "intimate"],
+      "notes": "Tiny counter-only concept; book."
+    },
+    {
+      "id": "backdoor-43",
+      "name": "Backdoor 43",
+      "address": "Ripa di Porta Ticinese 43, 20143 Milano MI, Italy",
+      "lat": 45.451281,
+      "lng": 9.173424,
+      "websiteUrl": "https://backdoor43.superbexperience.com/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.451281,9.173424",
+      "tags": ["cocktails", "speakeasy", "micro-bar"],
+      "notes": "4 seats; reserve 1 day prior."
+    },
+    {
+      "id": "gloria-osteria",
+      "name": "Gloria Osteria",
+      "address": "Via Tivoli 3, 20121 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://gloria-osteria.com/en/gloria-osteria-milano",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Via%20Tivoli%203%20Milano",
+      "tags": ["cocktails", "restaurant", "reservations"],
+      "notes": "Online booking; some walk-ins held."
+    },
+    {
+      "id": "luini",
+      "name": "Panzerotti Luini",
+      "address": "Via Santa Radegonda 16, 20121 Milano MI, Italy",
+      "lat": 45.465857,
+      "lng": 9.191319,
+      "websiteUrl": "https://www.luini.it/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.465857,9.191319",
+      "tags": ["street", "panzerotti"],
+      "notes": "Legendary fried pockets; takeaway."
+    },
+    {
+      "id": "spontini-duomo",
+      "name": "Spontini (Duomo)",
+      "address": "Via Santa Radegonda 11, 20121 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://spontinimilano.com/pizzerie/MILANO-DUOMO/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Via%20Santa%20Radegonda%2011%20Milano",
+      "tags": ["street", "pizza-slice", "grab-and-go"],
+      "notes": "Heavy, classic Milan slice."
+    },
+    {
+      "id": "marchesi-montenapoleone",
+      "name": "Pasticceria Marchesi 1824 (Via Monte Napoleone)",
+      "address": "Via Monte Napoleone 9, 20121 Milano MI, Italy",
+      "lat": null,
+      "lng": null,
+      "websiteUrl": "https://www.marchesi1824.com/",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Via%20Monte%20Napoleone%209%20Milano",
+      "tags": ["street", "bakery", "coffee"],
+      "notes": "Elegant pastry stop; also in Galleria."
+    }
+  ]
